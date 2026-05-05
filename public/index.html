@@ -162,7 +162,15 @@
             <button type="submit" class="btn btn-login w-100">Login</button>
 
             <div class="text-center mt-3 extra-links">
-              <span class="text-muted">Or sign up</span>
+              <span class="text-muted"
+                >Belum punya akun?
+                <a
+                  href="/register"
+                  class="text-decoration-none fw-bold"
+                  style="color: #27ae60"
+                  >Daftar di sini</a
+                >
+              </span>
             </div>
           </form>
         </div>
@@ -172,21 +180,42 @@
     <script>
       document
         .getElementById("formLogin")
-        .addEventListener("submit", function (e) {
+        .addEventListener("submit", async function (e) {
           e.preventDefault();
-          const user = document.getElementById("username").value;
-          const pass = document.getElementById("password").value;
+
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
           const errorMsg = document.getElementById("errorMessage");
 
-          if (user === "admin" && pass === "admin123") {
-            sessionStorage.setItem("isLoggedIn", "true");
-            sessionStorage.setItem("adminName", "Ammar");
-            window.location.href = "/dashboard";
-          } else {
-            errorMsg.style.display = "block";
+          try {
+            // Mengirim data login ke server
+            const response = await fetch("/api/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+              // Simpan sesi login
+              sessionStorage.setItem("isLoggedIn", "true");
+              sessionStorage.setItem("adminName", result.adminName);
+
+              // Alihkan ke dashboard
+              window.location.href = "/dashboard";
+            } else {
+              // Tampilkan pesan error jika login gagal
+              errorMsg.innerText = result.message;
+              errorMsg.style.display = "block";
+            }
+          } catch (error) {
+            console.error("Login Error:", error);
+            alert("Terjadi kesalahan pada server.");
           }
         });
 
+      // Proteksi jika user sudah login sebelumnya
       if (sessionStorage.getItem("isLoggedIn") === "true") {
         window.location.href = "/dashboard";
       }
