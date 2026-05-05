@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "id": 1714905600001,
+    "nama": "Ahmad Zaki",
+    "tanggal_lahir": "2024-05-10",
+    "jenis_kelamin": "Laki-laki",
+    "nama_ortu": "Budi/Siti",
+    "alamat": "Jl. Merpati No. 1"
+  },
+  {
+    "id": 1777993666483,
+    "nama": "Anuuuu",
+    "tanggal_lahir": "2026-05-05",
+    "jenis_kelamin": "Laki-laki",
+    "nama_ortu": "anu/anu",
+    "alamat": "anu",
+    "tanggal_daftar": "2026-05-05"
+  }
+]
