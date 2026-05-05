@@ -1,50 +1,72 @@
 <!doctype html>
 <html lang="id">
   <head>
+    <meta charset="UTF-8" />
+    <title>Laporan SIPOLTA</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/css/style.css" />
     <style>
+      /* Sembunyikan elemen non-laporan saat print */
       @media print {
         .sidebar,
         .btn,
-        header {
-          display: none;
+        header,
+        hr {
+          display: none !important;
         }
         .main-content {
           margin: 0;
+          padding: 0;
+          width: 100%;
+        }
+        .table {
+          border: 1px solid #000 !important;
         }
       }
     </style>
   </head>
   <body>
     <div class="sidebar">
-      <a href="/dashboard">Beranda</a>
-      <a href="/data-lansia">Data Lansia</a>
+      <h4 class="text-center">SIPOLTA</h4>
+      <hr />
+      <a href="/dashboard" class="active">Beranda</a>
+      <a href="/data-balita">Data Balita</a>
       <a href="/kunjungan">Kunjungan</a>
       <a href="/pemeriksaan">Pemeriksaan</a>
       <a href="/laporan">Laporan</a>
       <hr />
-      <a href="#" id="btnLogout" class="text-danger">Keluar (Logout)</a>
+      <a href="#" id="btnLogout" class="text-danger">Logout</a>
     </div>
+
+    <!-- Sidebar Sama -->
+
     <div class="main-content">
-      <div class="d-flex justify-content-between">
-        <h3>Laporan Posyandu Lansia</h3>
-        <button class="btn btn-dark" onclick="window.print()">Cetak PDF</button>
-      </div>
-      <hr />
-      <div id="kontenLaporan" class="bg-white p-4 shadow-sm">
-        <h5>Rekapitulasi Kunjungan & Kesehatan</h5>
-        <table class="table table-striped mt-3">
-          <thead>
+      <header>
+        <span>SIPOLTA - Laporan Bulanan</span>
+        <button class="btn btn-dark btn-sm" onclick="window.print()">
+          Cetak Laporan (PDF)
+        </button>
+      </header>
+
+      <div class="container-fluid mt-4">
+        <div class="text-center mb-4">
+          <h2>REKAPITULASI PEMERIKSAAN BALITA</h2>
+          <p>Sistem Informasi Posyandu Balita (SIPOLTA)</p>
+        </div>
+
+        <table class="table table-bordered table-striped">
+          <thead class="table-secondary">
             <tr>
-              <th>Tanggal</th>
-              <th>Nama Lansia</th>
-              <th>Tensi</th>
-              <th>Gula Darah</th>
-              <th>Saran</th>
+              <th>Tgl Periksa</th>
+              <th>Nama Balita</th>
+              <th>BB/TB/LK</th>
+              <th>KPSP</th>
+              <th>TDL/TDD</th>
+              <th>KMPE</th>
+              <th>Catatan</th>
             </tr>
           </thead>
           <tbody id="tabelLaporan"></tbody>
@@ -52,32 +74,31 @@
       </div>
     </div>
 
+    <script src="/js/app.js"></script>
     <script>
-      async function loadLaporan() {
-        const [resP, resL] = await Promise.all([
-          fetch("/api/pemeriksaan"),
-          fetch("/api/lansia"),
+      async function generateReport() {
+        const [balita, pemeriksaan] = await Promise.all([
+          fetch("/api/balita").then((r) => r.json()),
+          fetch("/api/pemeriksaan").then((r) => r.json()),
         ]);
-        const pemeriksaan = await resP.json();
-        const lansia = await resL.json();
 
         const tbody = document.getElementById("tabelLaporan");
         tbody.innerHTML = pemeriksaan
           .map((p) => {
-            const l = lansia.find((item) => item.id == p.lansia_id);
-            return `
-                    <tr>
-                        <td>${p.tanggal}</td>
-                        <td>${l ? l.nama : "Unknown"}</td>
-                        <td>${p.tensi_darah}</td>
-                        <td>${p.gula_darah}</td>
-                        <td>${p.catatan}</td>
-                    </tr>`;
+            const b = balita.find((x) => x.id == p.balita_id);
+            return `<tr>
+                    <td>${p.tanggal}</td>
+                    <td>${b ? b.nama : "-"}</td>
+                    <td>${p.berat_badan}kg / ${p.tinggi_badan}cm / ${p.lingkar_kepala}cm</td>
+                    <td>${p.kpsp}</td>
+                    <td>${p.tdl} / ${p.tdd}</td>
+                    <td>${p.kmpe || "-"}</td>
+                    <td>${p.catatan || "-"}</td>
+                </tr>`;
           })
           .join("");
       }
-      loadLaporan();
+      generateReport();
     </script>
-    <script src="/js/app.js"></script>
   </body>
 </html>

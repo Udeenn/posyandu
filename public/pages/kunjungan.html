@@ -2,81 +2,68 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <title>Kunjungan Lansia - Posyandu</title>
+    <title>Kunjungan SIPOLTA</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
     <div class="sidebar">
+      <h4 class="text-center">SIPOLTA</h4>
+      <hr />
       <a href="/dashboard">Beranda</a>
-      <a href="/data-lansia">Data Lansia</a>
-      <a href="/kunjungan">Kunjungan</a>
+      <a href="/data-balita">Data Balita</a>
+      <a href="/kunjungan" class="active">Kunjungan</a>
       <a href="/pemeriksaan">Pemeriksaan</a>
       <a href="/laporan">Laporan</a>
       <hr />
-      <a href="#" id="btnLogout" class="text-danger">Keluar (Logout)</a>
+      <a href="#" id="btnLogout" class="text-danger">Logout</a>
     </div>
 
     <div class="main-content">
       <header>
-        <img
-          src="../assets/img/posyandu.png"
-          style="width: 40px; height: 40px"
-          alt="Logo"
-        />
+        <span>SIPOLTA - Sistem Informasi Posyandu Balita</span>
         <span>Admin: <strong>Ammar</strong></span>
       </header>
 
-      <div class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3>Data Kunjungan Lansia</h3>
-          <button
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#modalKunjungan"
-          >
-            Tambah Kunjungan
-          </button>
-        </div>
-
-        <table class="table table-bordered bg-white shadow-sm">
-          <thead class="table-dark">
-            <tr>
-              <th>Tanggal</th>
-              <th>Nama Lansia</th>
-              <th>Tujuan Kunjungan</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="tabelKunjungan">
-            <!-- Data diisi oleh JS -->
-          </tbody>
-        </table>
+      <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+        <h3>Data Kunjungan Balita</h3>
+        <button
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#modalKunjungan"
+        >
+          Tambah Kunjungan
+        </button>
       </div>
+
+      <table class="table table-bordered bg-white shadow-sm">
+        <thead class="table-dark">
+          <tr>
+            <th>Tanggal</th>
+            <th>Nama Balita</th>
+            <th>Tujuan / Keluhan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tabelKunjungan"></tbody>
+      </table>
     </div>
 
-    <!-- Modal Tambah Kunjungan -->
+    <!-- Modal Kunjungan -->
     <div class="modal fade" id="modalKunjungan" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Form Tambah Kunjungan</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form id="formKunjungan">
+          <form id="formKunjungan">
+            <div class="modal-header">
+              <h5 class="modal-title">Input Kunjungan</h5>
+            </div>
+            <div class="modal-body">
               <div class="mb-3">
-                <label>Pilih Lansia</label>
-                <select id="selectLansia" class="form-select" required>
-                  <option value="">-- Pilih Nama Lansia --</option>
-                </select>
+                <label>Pilih Balita</label>
+                <select id="selectBalita" class="form-select" required></select>
               </div>
               <div class="mb-3">
                 <label>Tanggal Kunjungan</label>
@@ -88,86 +75,59 @@
                 />
               </div>
               <div class="mb-3">
-                <label>Tujuan / Keluhan</label>
+                <label>Tujuan</label>
                 <textarea
                   id="tujuan"
                   class="form-control"
-                  placeholder="Contoh: Cek rutin atau pusing"
+                  placeholder="Contoh: Imunisasi Campak"
                   required
                 ></textarea>
               </div>
-              <button type="submit" class="btn btn-primary w-100">
-                Simpan Kunjungan
-              </button>
-            </form>
-          </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
 
-    <script src="js/app.js"></script>
+    <script src="/js/app.js"></script>
     <script>
-      // 1. Load data lansia untuk Dropdown
-      async function loadLansiaToSelect() {
-        const res = await fetch("/api/lansia");
-        const data = await res.json();
-        const select = document.getElementById("selectLansia");
+      async function loadKunjunganPage() {
+        const [balita, kunjungan] = await Promise.all([
+          fetch("/api/balita").then((r) => r.json()),
+          fetch("/api/kunjungan").then((r) => r.json()),
+        ]);
 
-        data.forEach((l) => {
-          const opt = document.createElement("option");
-          opt.value = l.id;
-          opt.text = l.nama;
-          opt.dataset.nama = l.nama; // Simpan nama untuk disimpan ke kunjungan
-          select.appendChild(opt);
-        });
-      }
+        document.getElementById("selectBalita").innerHTML = balita
+          .map((b) => `<option value="${b.id}">${b.nama}</option>`)
+          .join("");
 
-      // 2. Load data tabel kunjungan
-      async function loadKunjungan() {
-        const res = await fetch("/api/kunjungan");
-        const data = await res.json();
-        const tbody = document.getElementById("tabelKunjungan");
-
-        tbody.innerHTML = data
-          .map(
-            (k) => `
-                <tr>
+        document.getElementById("tabelKunjungan").innerHTML = kunjungan
+          .map((k) => {
+            const b = balita.find((x) => x.id == k.balita_id);
+            return `<tr>
                     <td>${k.tanggal_kunjungan}</td>
-                    <td>${k.nama_lansia}</td>
+                    <td>${b ? b.nama : "Tidak diketahui"}</td>
                     <td>${k.tujuan}</td>
-                    <td>
-                      <button class="btn btn-sm btn-danger" onclick="hapusData('kunjungan', ${k.id})">
-                          Hapus
-                      </button>
-                    </td>
-                </tr>
-            `,
-          )
+                    <td><button class="btn btn-danger btn-sm" onclick="hapusData('kunjungan', ${k.id})">Hapus</button></td>
+                </tr>`;
+          })
           .join("");
       }
 
-      // 3. Handle Submit Form
       document
         .getElementById("formKunjungan")
-        .addEventListener("submit", function (e) {
+        .addEventListener("submit", (e) => {
           e.preventDefault();
-          const selectEl = document.getElementById("selectLansia");
-          const selectedOption = selectEl.options[selectEl.selectedIndex];
-
-          const data = {
-            lansia_id: selectEl.value,
-            nama_lansia: selectedOption.text,
+          simpanData("kunjungan", {
+            balita_id: document.getElementById("selectBalita").value,
             tanggal_kunjungan: document.getElementById("tglKunjungan").value,
             tujuan: document.getElementById("tujuan").value,
-          };
-
-          simpanData("kunjungan", data);
+          });
         });
-
-      // Jalankan fungsi saat page dibuka
-      loadLansiaToSelect();
-      loadKunjungan();
+      loadKunjunganPage();
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

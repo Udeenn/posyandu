@@ -7,16 +7,14 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// Fungsi Helper: Baca File
+// Fungsi Helper: Baca File (Ditambahkan auto-create file jika tidak ada)
 const readData = (file) => {
   const filePath = path.join(__dirname, "data", `${file}.json`);
 
-  // Cek apakah file benar-benar ada
   if (!fs.existsSync(filePath)) {
-    console.error(
-      `Peringatan: File ${file}.json tidak ditemukan di folder data.`,
-    );
-    return []; // Kembalikan array kosong jika file tidak ada, jangan biarkan crash
+    // Jika file data/balita.json dsb belum ada, buat file baru dengan array kosong
+    fs.writeFileSync(filePath, JSON.stringify([], null, 2));
+    return [];
   }
 
   try {
@@ -28,7 +26,6 @@ const readData = (file) => {
   }
 };
 
-// Fungsi Helper: Tulis File
 const writeData = (file, data) => {
   fs.writeFileSync(
     path.join(__dirname, "data", `${file}.json`),
@@ -36,15 +33,31 @@ const writeData = (file, data) => {
   );
 };
 
-// Endpoint untuk mengambil data
+// --- API ENDPOINTS ---
 app.get("/api/:table", (req, res) => res.json(readData(req.params.table)));
+
 app.post("/api/:table", (req, res) => {
   const data = readData(req.params.table);
+  // Tambahkan ID unik dan data dari body
   data.push({ id: Date.now(), ...req.body });
   writeData(req.params.table, data);
-  res.json({ message: "Data berhasil disimpan!" });
+  res.json({ message: "Data SIPOLTA berhasil disimpan!" });
 });
 
+app.delete("/api/:table/:id", (req, res) => {
+  const { table, id } = req.params;
+  let data = readData(table);
+  const dataBaru = data.filter((item) => item.id != id);
+
+  if (data.length === dataBaru.length) {
+    return res.status(404).json({ message: "Data tidak ditemukan" });
+  }
+
+  writeData(table, dataBaru);
+  res.json({ message: "Data berhasil dihapus!" });
+});
+
+// --- PAGE ROUTING ---
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
@@ -54,20 +67,6 @@ app.get("/:page", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "pages", `${page}.html`));
 });
 
-// DELETE
-app.delete('/api/:table/:id', (req, res) => {
-    const { table, id } = req.params;
-    let data = readData(table);
-    
-    // Filter data: simpan semua data KECUALI yang memiliki ID tersebut
-    const dataBaru = data.filter(item => item.id != id);
-    
-    if (data.length === dataBaru.length) {
-        return res.status(404).json({ message: 'Data tidak ditemukan' });
-    }
-    
-    writeData(table, dataBaru);
-    res.json({ message: 'Data berhasil dihapus!' });
-});
-
-app.listen(PORT, () => console.log(`Server running: http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`SIPOLTA Server running: http://localhost:${PORT}`),
+);

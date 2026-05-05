@@ -1,204 +1,177 @@
 <!doctype html>
 <html lang="id">
   <head>
-    <meta charset="UTF-8" />
-    <title>Pemeriksaan Kesehatan - Posyandu</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
     <div class="sidebar">
-      <a href="/dashboard">Beranda</a>
-      <a href="/data-lansia">Data Lansia</a>
+      <h4 class="text-center">SIPOLTA</h4>
+      <hr />
+      <a href="/dashboard" class="active">Beranda</a>
+      <a href="/data-balita">Data Balita</a>
       <a href="/kunjungan">Kunjungan</a>
       <a href="/pemeriksaan">Pemeriksaan</a>
       <a href="/laporan">Laporan</a>
       <hr />
-      <a href="#" id="btnLogout" class="text-danger">Keluar (Logout)</a>
+      <a href="#" id="btnLogout" class="text-danger">Logout</a>
     </div>
 
     <div class="main-content">
-      <header>
-        <img
-          src="../assets/img/posyandu.png"
-          style="width: 40px; height: 40px"
-          alt="Logo"
-        />
-        <span>Admin: <strong>Ammar</strong></span>
-      </header>
-
-      <div class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3>Pemeriksaan Kesehatan</h3>
-          <button
-            class="btn btn-success"
-            data-bs-toggle="modal"
-            data-bs-target="#modalPemeriksaan"
-          >
-            Input Hasil Periksa
-          </button>
-        </div>
-
-        <table class="table table-bordered bg-white shadow-sm">
-          <thead class="table-success">
-            <tr>
-              <th>Tanggal</th>
-              <th>Nama Lansia</th>
-              <th>BB/TB</th>
-              <th>Tensi</th>
-              <th>Gula Darah</th>
-              <th>Catatan</th>
-            </tr>
-          </thead>
-          <tbody id="tabelPemeriksaan">
-            <!-- Data diisi oleh JS -->
-          </tbody>
-        </table>
-      </div>
+      <h3>Pemeriksaan Balita</h3>
+      <button
+        class="btn btn-success mb-3"
+        data-bs-toggle="modal"
+        data-bs-target="#modalPeriksa"
+      >
+        Input Pemeriksaan
+      </button>
+      <table class="table table-bordered bg-white">
+        <thead class="table-success">
+          <tr>
+            <th>Tgl</th>
+            <th>Nama</th>
+            <th>BB/TB/LK</th>
+            <th>KPSP/TDL/TDD</th>
+            <th>KMPE</th>
+          </tr>
+        </thead>
+        <tbody id="tabelPeriksa"></tbody>
+      </table>
     </div>
 
-    <!-- Modal Input Pemeriksaan -->
-    <div class="modal fade" id="modalPemeriksaan" tabindex="-1">
+    <div class="modal fade" id="modalPeriksa" tabindex="-1">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Form Hasil Pemeriksaan</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form id="formPemeriksaan">
+          <form id="formPeriksa">
+            <div class="modal-body">
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label>Pilih Lansia</label>
-                  <select id="selectLansia" class="form-select" required>
-                    <option value="">-- Pilih Nama --</option>
+                  <label>Pilih Balita</label
+                  ><select
+                    id="selectBalita"
+                    class="form-select"
+                    required
+                  ></select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label>Tanggal</label
+                  ><input type="date" id="tgl" class="form-control" required />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label>BB (kg)</label
+                  ><input
+                    type="number"
+                    step="0.1"
+                    id="bb"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label>TB (cm)</label
+                  ><input
+                    type="number"
+                    step="0.1"
+                    id="tb"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label>LK (cm)</label
+                  ><input
+                    type="number"
+                    step="0.1"
+                    id="lk"
+                    class="form-control"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label>KPSP</label
+                  ><select id="kpsp" class="form-select">
+                    <option>Sesuai</option>
+                    <option>Meragukan</option>
+                    <option>Penyimpangan</option>
                   </select>
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label>Tanggal Periksa</label>
-                  <input
-                    type="date"
-                    id="tglPeriksa"
-                    class="form-control"
-                    required
-                  />
-                </div>
-              </div>
-              <div class="row">
                 <div class="col-md-4 mb-3">
-                  <label>Berat Badan (kg)</label>
-                  <input type="number" id="bb" class="form-control" required />
+                  <label>TDL</label
+                  ><select id="tdl" class="form-select">
+                    <option>Normal</option>
+                    <option>Gangguan</option>
+                  </select>
                 </div>
                 <div class="col-md-4 mb-3">
-                  <label>Tinggi Badan (cm)</label>
-                  <input type="number" id="tb" class="form-control" required />
-                </div>
-                <div class="col-md-4 mb-3">
-                  <label>Gula Darah (mg/dL)</label>
-                  <input
-                    type="number"
-                    id="gula"
-                    class="form-control"
-                    required
-                  />
+                  <label>TDD</label
+                  ><select id="tdd" class="form-select">
+                    <option>Normal</option>
+                    <option>Gangguan</option>
+                  </select>
                 </div>
               </div>
               <div class="mb-3">
-                <label>Tekanan Darah (Tensi)</label>
-                <input
-                  type="text"
-                  id="tensi"
+                <label>KMPE</label
+                ><textarea
+                  id="kmpe"
                   class="form-control"
-                  placeholder="Contoh: 120/80"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label>Catatan/Saran</label>
-                <textarea
-                  id="catatan"
-                  class="form-control"
-                  placeholder="Contoh: Kurangi konsumsi garam"
+                  placeholder="Hasil KMPE"
                 ></textarea>
               </div>
-              <button type="submit" class="btn btn-success w-100">
-                Simpan Hasil Pemeriksaan
-              </button>
-            </form>
-          </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-success">Simpan</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
 
     <script src="/js/app.js"></script>
     <script>
-      // Ambil Nama Lansia untuk Dropdown
-      async function loadLansiaToSelect() {
-        const res = await fetch("/api/lansia");
-        const data = await res.json();
-        const select = document.getElementById("selectLansia");
-        data.forEach((l) => {
-          const opt = document.createElement("option");
-          opt.value = l.id;
-          opt.text = l.nama;
-          select.appendChild(opt);
-        });
-      }
+      async function initPage() {
+        const balita = await fetch("/api/balita").then((r) => r.json());
+        const periksa = await fetch("/api/pemeriksaan").then((r) => r.json());
 
-      // Ambil Data Pemeriksaan untuk Tabel
-      async function loadPemeriksaan() {
-        const resP = await fetch("/api/pemeriksaan");
-        const resL = await fetch("/api/lansia");
-        const pemeriksaan = await resP.json();
-        const lansia = await resL.json();
-
-        const tbody = document.getElementById("tabelPemeriksaan");
-        tbody.innerHTML = pemeriksaan
+        document.getElementById("selectBalita").innerHTML = balita
+          .map((b) => `<option value="${b.id}">${b.nama}</option>`)
+          .join("");
+        document.getElementById("tabelPeriksa").innerHTML = periksa
           .map((p) => {
-            // Cari nama lansia berdasarkan ID
-            const dataL = lansia.find((l) => l.id == p.lansia_id);
-            const nama = dataL ? dataL.nama : "Tidak Dikenal";
-
-            return `
-                    <tr>
-                        <td>${p.tanggal}</td>
-                        <td><strong>${nama}</strong></td>
-                        <td>${p.berat_badan}kg / ${p.tinggi_badan}cm</td>
-                        <td>${p.tensi_darah}</td>
-                        <td>${p.gula_darah}</td>
-                        <td><small>${p.catatan}</small></td>
-                    </tr>
-                `;
+            const b = balita.find((x) => x.id == p.balita_id);
+            return `<tr>
+                    <td>${p.tanggal}</td>
+                    <td>${b ? b.nama : "Unknown"}</td>
+                    <td>${p.berat_badan}/${p.tinggi_badan}/${p.lingkar_kepala}</td>
+                    <td>${p.kpsp}/${p.tdl}/${p.tdd}</td>
+                    <td>${p.kmpe}</td>
+                </tr>`;
           })
           .join("");
       }
-
-      document
-        .getElementById("formPemeriksaan")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-          const data = {
-            lansia_id: document.getElementById("selectLansia").value,
-            tanggal: document.getElementById("tglPeriksa").value,
-            berat_badan: document.getElementById("bb").value,
-            tinggi_badan: document.getElementById("tb").value,
-            gula_darah: document.getElementById("gula").value,
-            tensi_darah: document.getElementById("tensi").value,
-            catatan: document.getElementById("catatan").value,
-          };
-          simpanData("pemeriksaan", data);
+      document.getElementById("formPeriksa").addEventListener("submit", (e) => {
+        e.preventDefault();
+        simpanData("pemeriksaan", {
+          balita_id: document.getElementById("selectBalita").value,
+          tanggal: document.getElementById("tgl").value,
+          berat_badan: document.getElementById("bb").value,
+          tinggi_badan: document.getElementById("tb").value,
+          lingkar_kepala: document.getElementById("lk").value,
+          kpsp: document.getElementById("kpsp").value,
+          tdl: document.getElementById("tdl").value,
+          tdd: document.getElementById("tdd").value,
+          kmpe: document.getElementById("kmpe").value,
         });
-
-      loadLansiaToSelect();
-      loadPemeriksaan();
+      });
+      initPage();
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

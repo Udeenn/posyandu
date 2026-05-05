@@ -1,32 +1,15 @@
 [
   {
     "id": 1714905800001,
-    "lansia_id": 1714905600001,
+    "balita_id": 1714905600001,
     "tanggal": "2026-05-05",
-    "berat_badan": 55,
-    "tinggi_badan": 150,
-    "tensi_darah": "120/80",
-    "gula_darah": 110,
-    "catatan": "Kondisi stabil, pertahankan pola makan."
-  },
-  {
-    "id": 1714905800002,
-    "lansia_id": 1714905600002,
-    "tanggal": "2026-05-05",
-    "berat_badan": 70,
-    "tinggi_badan": 165,
-    "tensi_darah": "145/90",
-    "gula_darah": 180,
-    "catatan": "Tensi dan gula darah tinggi, disarankan diet rendah garam dan gula."
-  },
-  {
-    "id": 1777984555146,
-    "lansia_id": "1714905600001",
-    "tanggal": "2026-05-09",
-    "berat_badan": "55",
-    "tinggi_badan": "160",
-    "gula_darah": "98",
-    "tensi_darah": "120/80",
-    "catatan": "kurangi konsumsi gula"
+    "berat_badan": 8.5,
+    "tinggi_badan": 72.0,
+    "lingkar_kepala": 44.5,
+    "kpsp": "Sesuai",
+    "tdl": "Normal",
+    "tdd": "Normal",
+    "kmpe": "Tidak ada masalah perilaku emosional",
+    "catatan": "Pertumbuhan normal sesuai usia."
   }
 ]

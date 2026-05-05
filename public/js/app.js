@@ -8,13 +8,14 @@ async function simpanData(endpoint, dataObj) {
     });
     const result = await response.json();
     alert(result.message);
-    location.reload(); // Refresh halaman setelah simpan
+    location.reload();
   } catch (error) {
     console.error("Gagal menyimpan:", error);
-    alert("Terjadi kesalahan server.");
+    alert("Terjadi kesalahan server SIPOLTA.");
   }
 }
 
+// Fungsi hapus data
 async function hapusData(endpoint, id) {
   if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
     try {
@@ -23,7 +24,7 @@ async function hapusData(endpoint, id) {
       });
       const result = await response.json();
       alert(result.message);
-      location.reload(); // Refresh halaman untuk memperbarui tabel
+      location.reload();
     } catch (error) {
       console.error("Gagal menghapus:", error);
       alert("Terjadi kesalahan saat menghapus data.");
@@ -31,22 +32,35 @@ async function hapusData(endpoint, id) {
   }
 }
 
+// Fungsi Hitung Umur Bulan (Sangat penting untuk Balita)
+function hitungUmurBulan(tanggalLahir) {
+  const tglLahir = new Date(tanggalLahir);
+  const tglSekarang = new Date();
+  let bulan = (tglSekarang.getFullYear() - tglLahir.getFullYear()) * 12;
+  bulan += tglSekarang.getMonth() - tglLahir.getMonth();
+  return bulan;
+}
+
+// Penyesuaian Nama Admin di Header
+const adminName = sessionStorage.getItem("adminName");
+const adminDisplay = document.querySelector("header strong");
+if (adminDisplay && adminName) {
+  adminDisplay.innerText = adminName;
+}
+
 // Fungsi Logout
 const btnLogout = document.getElementById("btnLogout");
 if (btnLogout) {
   btnLogout.addEventListener("click", function (e) {
     e.preventDefault();
-    if (confirm("Apakah Anda yakin ingin keluar?")) {
-      // Hapus data sesi
+    if (confirm("Keluar dari sistem SIPOLTA?")) {
       sessionStorage.clear();
-      // Arahkan ke halaman login (index.html berada di root)
       window.location.href = "/";
     }
   });
 }
 
-// Proteksi Halaman: Cek apakah user sudah login
-// Jika tidak ada data login, tendang balik ke halaman login
+// Proteksi Halaman
 if (
   window.location.pathname !== "/" &&
   window.location.pathname !== "/index.html"
