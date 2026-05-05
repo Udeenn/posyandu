@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1714905700001,
+    "lansia_id": 1714905600001,
+    "nama_lansia": "Siti Aminah",
+    "tanggal_kunjungan": "2026-05-05",
+    "tujuan": "Pemeriksaan Rutin"
+  },
+  {
+    "id": 1714905700002,
+    "lansia_id": 1714905600002,
+    "nama_lansia": "Bambang Soeprapto",
+    "tanggal_kunjungan": "2026-05-05",
+    "tujuan": "Konsultasi Keluhan"
+  }
+]

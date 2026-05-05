@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard Posyandu</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <a href="/dashboard">Beranda</a>
+      <a href="/data-lansia">Data Lansia</a>
+      <a href="/kunjungan">Kunjungan</a>
+      <a href="/pemeriksaan">Pemeriksaan</a>
+      <a href="/laporan">Laporan</a>
+    </div>
+
+    <div class="main-content">
+      <header>
+        <img
+          src="../assets/img/posyandu.png"
+          style="width: 40px; height: 40px"
+          alt="Logo"
+        />
+        <span>Admin: <strong>Ammar</strong></span>
+      </header>
+
+      <div class="container-fluid">
+        <h3 class="mb-4">Ringkasan Statistik</h3>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="card bg-primary text-white p-3 mb-3">
+              <h5>Total Lansia</h5>
+              <h2 id="totalLansia">0</h2>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-success text-white p-3 mb-3">
+              <h5>Total Kunjungan</h5>
+              <h2 id="totalKunjungan">0</h2>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-info text-white p-3 mb-3">
+              <h5>Lansia Baru (Mei)</h5>
+              <h2 id="lansiaBaru">0</h2>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-warning text-dark p-3 mb-3">
+              <h5>Lansia Lama</h5>
+              <h2 id="lansiaLama">0</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function loadDashboard() {
+        // Ambil data dari API
+        const resLansia = await fetch("/api/lansia");
+        const resKunjungan = await fetch("/api/kunjungan");
+
+        const lansia = await resLansia.json();
+        const kunjungan = await resKunjungan.json();
+
+        // Hitung Statistik
+        document.getElementById("totalLansia").innerText = lansia.length;
+        document.getElementById("totalKunjungan").innerText = kunjungan.length;
+
+        // Logika Lansia Baru (Daftar di bulan berjalan: Mei 2026)
+        const bulanSekarang = "2026-05";
+        const baru = lansia.filter(
+          (l) => l.tanggal_daftar && l.tanggal_daftar.startsWith(bulanSekarang),
+        ).length;
+
+        document.getElementById("lansiaBaru").innerText = baru;
+        document.getElementById("lansiaLama").innerText = lansia.length - baru;
+      }
+
+      loadDashboard();
+    </script>
+  </body>
+</html>

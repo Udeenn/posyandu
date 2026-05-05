@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1714905600001,
+    "nama": "Siti Aminah",
+    "nik": "3374012345670001",
+    "umur": 65,
+    "jenis_kelamin": "Perempuan",
+    "alamat": "Jl. Mawar No. 12, RT 01/RW 02",
+    "tanggal_daftar": "2026-01-10"
+  },
+  {
+    "id": 1714905600002,
+    "nama": "Bambang Soeprapto",
+    "nik": "3374012345670002",
+    "umur": 72,
+    "jenis_kelamin": "Laki-laki",
+    "alamat": "Jl. Melati No. 5, RT 03/RW 02",
+    "tanggal_daftar": "2026-02-15"
+  },
+  {
+    "id": 1714905600003,
+    "nama": "Suharti",
+    "nik": "3374012345670003",
+    "umur": 68,
+    "jenis_kelamin": "Perempuan",
+    "alamat": "Gg. Kancil No. 9, RT 01/RW 01",
+    "tanggal_daftar": "2026-05-01"
+  }
+]

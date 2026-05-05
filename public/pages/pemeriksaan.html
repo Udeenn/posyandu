@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pemeriksaan Kesehatan - Posyandu</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <a href="/dashboard">Beranda</a>
+      <a href="/data-lansia">Data Lansia</a>
+      <a href="/kunjungan">Kunjungan</a>
+      <a href="/pemeriksaan">Pemeriksaan</a>
+      <a href="/laporan">Laporan</a>
+    </div>
+
+    <div class="main-content">
+      <header>
+        <img
+          src="../assets/img/posyandu.png"
+          style="width: 40px; height: 40px"
+          alt="Logo"
+        />
+        <span>Admin: <strong>Ammar</strong></span>
+      </header>
+
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3>Pemeriksaan Kesehatan</h3>
+          <button
+            class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#modalPemeriksaan"
+          >
+            Input Hasil Periksa
+          </button>
+        </div>
+
+        <table class="table table-bordered bg-white shadow-sm">
+          <thead class="table-success">
+            <tr>
+              <th>Tanggal</th>
+              <th>Nama Lansia</th>
+              <th>BB/TB</th>
+              <th>Tensi</th>
+              <th>Gula Darah</th>
+              <th>Catatan</th>
+            </tr>
+          </thead>
+          <tbody id="tabelPemeriksaan">
+            <!-- Data diisi oleh JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal Input Pemeriksaan -->
+    <div class="modal fade" id="modalPemeriksaan" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Form Hasil Pemeriksaan</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="formPemeriksaan">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label>Pilih Lansia</label>
+                  <select id="selectLansia" class="form-select" required>
+                    <option value="">-- Pilih Nama --</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label>Tanggal Periksa</label>
+                  <input
+                    type="date"
+                    id="tglPeriksa"
+                    class="form-control"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label>Berat Badan (kg)</label>
+                  <input type="number" id="bb" class="form-control" required />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label>Tinggi Badan (cm)</label>
+                  <input type="number" id="tb" class="form-control" required />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label>Gula Darah (mg/dL)</label>
+                  <input
+                    type="number"
+                    id="gula"
+                    class="form-control"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label>Tekanan Darah (Tensi)</label>
+                <input
+                  type="text"
+                  id="tensi"
+                  class="form-control"
+                  placeholder="Contoh: 120/80"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label>Catatan/Saran</label>
+                <textarea
+                  id="catatan"
+                  class="form-control"
+                  placeholder="Contoh: Kurangi konsumsi garam"
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-success w-100">
+                Simpan Hasil Pemeriksaan
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+      // Ambil Nama Lansia untuk Dropdown
+      async function loadLansiaToSelect() {
+        const res = await fetch("/api/lansia");
+        const data = await res.json();
+        const select = document.getElementById("selectLansia");
+        data.forEach((l) => {
+          const opt = document.createElement("option");
+          opt.value = l.id;
+          opt.text = l.nama;
+          select.appendChild(opt);
+        });
+      }
+
+      // Ambil Data Pemeriksaan untuk Tabel
+      async function loadPemeriksaan() {
+        const resP = await fetch("/api/pemeriksaan");
+        const resL = await fetch("/api/lansia");
+        const pemeriksaan = await resP.json();
+        const lansia = await resL.json();
+
+        const tbody = document.getElementById("tabelPemeriksaan");
+        tbody.innerHTML = pemeriksaan
+          .map((p) => {
+            // Cari nama lansia berdasarkan ID
+            const dataL = lansia.find((l) => l.id == p.lansia_id);
+            const nama = dataL ? dataL.nama : "Tidak Dikenal";
+
+            return `
+                    <tr>
+                        <td>${p.tanggal}</td>
+                        <td><strong>${nama}</strong></td>
+                        <td>${p.berat_badan}kg / ${p.tinggi_badan}cm</td>
+                        <td>${p.tensi_darah}</td>
+                        <td>${p.gula_darah}</td>
+                        <td><small>${p.catatan}</small></td>
+                    </tr>
+                `;
+          })
+          .join("");
+      }
+
+      document
+        .getElementById("formPemeriksaan")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const data = {
+            lansia_id: document.getElementById("selectLansia").value,
+            tanggal: document.getElementById("tglPeriksa").value,
+            berat_badan: document.getElementById("bb").value,
+            tinggi_badan: document.getElementById("tb").value,
+            gula_darah: document.getElementById("gula").value,
+            tensi_darah: document.getElementById("tensi").value,
+            catatan: document.getElementById("catatan").value,
+          };
+          simpanData("pemeriksaan", data);
+        });
+
+      loadLansiaToSelect();
+      loadPemeriksaan();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
