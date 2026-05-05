@@ -30,6 +30,7 @@
 
       <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
         <h3>Data Kunjungan Balita</h3>
+        <!-- Tombol ini butuh Bootstrap JS agar bisa terbuka -->
         <button
           class="btn btn-primary"
           data-bs-toggle="modal"
@@ -59,14 +60,20 @@
           <form id="formKunjungan">
             <div class="modal-header">
               <h5 class="modal-title">Input Kunjungan</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
             </div>
             <div class="modal-body">
               <div class="mb-3">
-                <label>Pilih Balita</label>
+                <label class="form-label">Pilih Balita</label>
                 <select id="selectBalita" class="form-select" required></select>
               </div>
               <div class="mb-3">
-                <label>Tanggal Kunjungan</label>
+                <label class="form-label">Tanggal Kunjungan</label>
                 <input
                   type="date"
                   id="tglKunjungan"
@@ -75,7 +82,7 @@
                 />
               </div>
               <div class="mb-3">
-                <label>Tujuan</label>
+                <label class="form-label">Tujuan</label>
                 <textarea
                   id="tujuan"
                   class="form-control"
@@ -85,6 +92,13 @@
               </div>
             </div>
             <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Batal
+              </button>
               <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
           </form>
@@ -92,29 +106,39 @@
       </div>
     </div>
 
+    <!-- WAJIB: Bootstrap JS Bundle untuk fungsionalitas Modal -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/app.js"></script>
     <script>
       async function loadKunjunganPage() {
-        const [balita, kunjungan] = await Promise.all([
-          fetch("/api/balita").then((r) => r.json()),
-          fetch("/api/kunjungan").then((r) => r.json()),
-        ]);
+        try {
+          const [balita, kunjungan] = await Promise.all([
+            fetch("/api/balita").then((r) => r.json()),
+            fetch("/api/kunjungan").then((r) => r.json()),
+          ]);
 
-        document.getElementById("selectBalita").innerHTML = balita
-          .map((b) => `<option value="${b.id}">${b.nama}</option>`)
-          .join("");
+          const selectBalita = document.getElementById("selectBalita");
+          selectBalita.innerHTML =
+            '<option value="" disabled selected>-- Pilih Balita --</option>' +
+            balita
+              .map((b) => `<option value="${b.id}">${b.nama}</option>`)
+              .join("");
 
-        document.getElementById("tabelKunjungan").innerHTML = kunjungan
-          .map((k) => {
-            const b = balita.find((x) => x.id == k.balita_id);
-            return `<tr>
-                    <td>${k.tanggal_kunjungan}</td>
-                    <td>${b ? b.nama : "Tidak diketahui"}</td>
-                    <td>${k.tujuan}</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="hapusData('kunjungan', ${k.id})">Hapus</button></td>
-                </tr>`;
-          })
-          .join("");
+          const tbody = document.getElementById("tabelKunjungan");
+          tbody.innerHTML = kunjungan
+            .map((k) => {
+              const b = balita.find((x) => x.id == k.balita_id);
+              return `<tr>
+                      <td>${k.tanggal_kunjungan}</td>
+                      <td>${b ? b.nama : "Tidak diketahui"}</td>
+                      <td>${k.tujuan}</td>
+                      <td><button class="btn btn-danger btn-sm" onclick="hapusData('kunjungan', ${k.id})">Hapus</button></td>
+                  </tr>`;
+            })
+            .join("");
+        } catch (error) {
+          console.error("Gagal memuat data:", error);
+        }
       }
 
       document
@@ -127,6 +151,7 @@
             tujuan: document.getElementById("tujuan").value,
           });
         });
+
       loadKunjunganPage();
     </script>
   </body>
