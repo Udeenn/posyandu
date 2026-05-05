@@ -30,3 +30,28 @@ async function hapusData(endpoint, id) {
     }
   }
 }
+
+// Fungsi Logout
+const btnLogout = document.getElementById("btnLogout");
+if (btnLogout) {
+  btnLogout.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (confirm("Apakah Anda yakin ingin keluar?")) {
+      // Hapus data sesi
+      sessionStorage.clear();
+      // Arahkan ke halaman login (index.html berada di root)
+      window.location.href = "/";
+    }
+  });
+}
+
+// Proteksi Halaman: Cek apakah user sudah login
+// Jika tidak ada data login, tendang balik ke halaman login
+if (
+  window.location.pathname !== "/" &&
+  window.location.pathname !== "/index.html"
+) {
+  if (sessionStorage.getItem("isLoggedIn") !== "true") {
+    window.location.href = "/";
+  }
+}
