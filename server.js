@@ -88,6 +88,21 @@ app.post("/api/:table", (req, res) => {
   res.json({ message: "Data SIPOLTA berhasil disimpan!" });
 });
 
+app.put("/api/:table/:id", (req, res) => {
+  const { table, id } = req.params;
+  let data = readData(table);
+  const index = data.findIndex((item) => item.id == id);
+
+  if (index !== -1) {
+    // Gabungkan data lama dengan data baru dari req.body
+    data[index] = { ...data[index], ...req.body };
+    writeData(table, data);
+    res.json({ message: "Data berhasil diperbarui!" });
+  } else {
+    res.status(404).json({ message: "Data tidak ditemukan" });
+  }
+});
+
 app.delete("/api/:table/:id", (req, res) => {
   const { table, id } = req.params;
   let data = readData(table);

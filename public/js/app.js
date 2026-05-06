@@ -15,6 +15,22 @@ async function simpanData(endpoint, dataObj) {
   }
 }
 
+async function updateData(endpoint, id, dataObj) {
+  try {
+    const response = await fetch(`/api/${endpoint}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dataObj),
+    });
+    const result = await response.json();
+    alert(result.message);
+    location.reload();
+  } catch (error) {
+    console.error("Gagal update:", error);
+    alert("Terjadi kesalahan server.");
+  }
+}
+
 // Fungsi hapus data
 async function hapusData(endpoint, id) {
   if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {

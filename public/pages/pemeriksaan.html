@@ -158,6 +158,9 @@
               </button>
               <button type="submit" class="btn btn-success">Simpan</button>
             </div>
+
+            <!-- edit -->
+            <input type="hidden" id="editId" value="" />
           </form>
         </div>
       </div>
@@ -205,6 +208,98 @@
           kmpe: document.getElementById("kmpe").value,
         });
       });
+      initPage();
+    </script>
+    <script>
+      let isEditMode = false;
+
+      async function initPage() {
+        const balita = await fetch("/api/balita").then((r) => r.json());
+        const periksa = await fetch("/api/pemeriksaan").then((r) => r.json());
+
+        document.getElementById("selectBalita").innerHTML = balita
+          .map((b) => `<option value="${b.id}">${b.nama}</option>`)
+          .join("");
+
+        document.getElementById("tabelPeriksa").innerHTML = periksa
+          .map((p) => {
+            const b = balita.find((x) => x.id == p.balita_id);
+            // Stringify data untuk dikirim ke fungsi edit
+            const dataJson = JSON.stringify(p).replace(/"/g, "&quot;");
+
+            return `<tr>
+                <td>${p.tanggal}</td>
+                <td>${b ? b.nama : "Unknown"}</td>
+                <td>${p.berat_badan}/${p.tinggi_badan}/${p.lingkar_kepala}</td>
+                <td>${p.kpsp}/${p.tdl}/${p.tdd}</td>
+                <td>${p.kmpe}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="editPemeriksaan('${dataJson}')">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="hapusData('pemeriksaan', ${p.id})">Hapus</button>
+                </td>
+            </tr>`;
+          })
+          .join("");
+      }
+
+      // Fungsi untuk mengisi form saat tombol Edit diklik
+      function editPemeriksaan(dataString) {
+        const p = JSON.parse(dataString);
+        isEditMode = true;
+
+        // Isi field form
+        document.getElementById("editId").value = p.id;
+        document.getElementById("selectBalita").value = p.balita_id;
+        document.getElementById("tgl").value = p.tanggal;
+        document.getElementById("bb").value = p.berat_badan;
+        document.getElementById("tb").value = p.tinggi_badan;
+        document.getElementById("lk").value = p.lingkar_kepala;
+        document.getElementById("kpsp").value = p.kpsp;
+        document.getElementById("tdl").value = p.tdl;
+        document.getElementById("tdd").value = p.tdd;
+        document.getElementById("kmpe").value = p.kmpe;
+
+        // Ubah judul modal dan munculkan modal
+        document.querySelector(".modal-title").innerText =
+          "Edit Pemeriksaan Balita";
+        new bootstrap.Modal(document.getElementById("modalPeriksa")).show();
+      }
+
+      // Reset form saat modal ditutup (agar kembali ke mode Tambah)
+      document
+        .getElementById("modalPeriksa")
+        .addEventListener("hidden.bs.modal", function () {
+          isEditMode = false;
+          document.getElementById("formPeriksa").reset();
+          document.getElementById("editId").value = "";
+          document.querySelector(".modal-title").innerText =
+            "Form Input Pemeriksaan";
+        });
+
+      document.getElementById("formPeriksa").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const data = {
+          balita_id: document.getElementById("selectBalita").value,
+          tanggal: document.getElementById("tgl").value,
+          berat_badan: document.getElementById("bb").value,
+          tinggi_badan: document.getElementById("tb").value,
+          lingkar_kepala: document.getElementById("lk").value,
+          kpsp: document.getElementById("kpsp").value,
+          tdl: document.getElementById("tdl").value,
+          tdd: document.getElementById("tdd").value,
+          kmpe: document.getElementById("kmpe").value,
+        };
+
+        const id = document.getElementById("editId").value;
+
+        if (isEditMode) {
+          updateData("pemeriksaan", id, data);
+        } else {
+          simpanData("pemeriksaan", data);
+        }
+      });
+
       initPage();
     </script>
   </body>
